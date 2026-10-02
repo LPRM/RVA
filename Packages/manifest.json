@@ -1,14 +1,4 @@
 {
-  "scopedRegistries": [
-    {
-      "name": "Vuforia",
-      "url": "https://registry.packages.developer.vuforia.com",
-      "scopes": [
-        "com.ptc.vuforia"
-      ]
-    }
-  ],
-
   "dependencies": {
     "com.ptc.vuforia.engine": "11.4.4",
     "com.unity.ai.assistant": "2.20.0-pre.1",
@@ -59,5 +49,15 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
-  }
+  },
+  "scopedRegistries": [
+    {
+      "name": "Vuforia",
+      "url": "https://registry.packages.developer.vuforia.com",
+      "scopes": [
+        "com.ptc.vuforia",
+        "com.ptc.vuforia.engine"
+      ]
+    }
+  ]
 }
