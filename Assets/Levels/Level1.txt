@@ -1,0 +1,13 @@
+; Nível de teste da Fase 1 (os três níveis a sério ficam para a Fase 2).
+; #  parede        .  chão          S  início       E  saída
+; O  buraco        C  checkpoint    R  portão vermelho   B  portão azul
+; Linhas começadas por ';' são comentários. A primeira linha da grelha é o lado de cima do marcador.
+###########
+#S....#...#
+#.###.#.#.#
+#...#...#.#
+###.#####.#
+#...O...C.#
+#.#####.###
+#.R...#..E#
+###########
