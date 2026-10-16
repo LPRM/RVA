@@ -324,6 +324,8 @@ MonoBehaviour:
   deadZoneDegrees: 2
   tiltSensitivity: 1
   gravitySharpness: 8
+  invertTiltX: 0
+  invertTiltZ: 0
   autoCalibrateOnFirstTracking: 1
   autoCalibrateDelay: 0.5
   startWithKeyboardInEditor: 1
@@ -352,7 +354,7 @@ MonoBehaviour:
     #########'
   buildOnStart: 1
   visualParent: {fileID: 0}
-  visualSize: 0.13
+  visualSize: 0.3
   physicsOrigin: {x: 0, y: -1000, z: 0}
   renderPhysicsCopy: 1
   hiddenLayer: 29
@@ -501,14 +503,14 @@ MonoBehaviour:
   PreviewVisible: 1
   RuntimeOcclusion: 0
   RuntimeCollider: 0
-  mTrackableName: Astronaut_scaled
+  mTrackableName: maze_code
   mInitializedInEditor: 1
-  mDataSetPath: 
-  mAspectRatio: 1.7272727
+  mDataSetPath: Vuforia/VuforiaMars_Images.xml
+  mAspectRatio: 1.0153257
   mImageTargetType: 3
-  mWidth: 0.21
-  mHeight: 0.36272725
-  mRuntimeTexture: {fileID: 2800000, guid: 77fb44a366db5cb41b8c06649271f8e6, type: 3}
+  mWidth: 0.19698113
+  mHeight: 0.2
+  mRuntimeTexture: {fileID: 2800000, guid: 777f001e723f6ac4d85a38dfeb8c4c8f, type: 3}
   mMotionHint: 1
   mTrackingOptimization: 0
   mTrackingOptimizationNeedsUpgrade: 0
@@ -542,8 +544,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Vuforia.Unity.Engine.dll::Vuforia.ImageTargetPreview
   mObserverBehaviour: {fileID: 1030288017}
   mHiddenRoot: {fileID: 0}
-  mTargetName: Astronaut_scaled
-  mDatasetName: 
+  mTargetName: maze_code
+  mDatasetName: Vuforia/VuforiaMars_Images.xml
   mCastedBehaviour: {fileID: 1030288017}
   mMeshFilter: {fileID: 0}
   mMeshRenderer: {fileID: 0}

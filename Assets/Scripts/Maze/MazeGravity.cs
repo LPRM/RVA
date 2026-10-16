@@ -35,6 +35,10 @@ namespace RVA
         [SerializeField, Range(0.5f, 3f)] float tiltSensitivity = 1f;
         [Tooltip("How quickly gravity follows the tilt. Lower is smoother.")]
         [SerializeField, Min(0.1f)] float gravitySharpness = 8f;
+        [Tooltip("Flip left/right marker tilt (e.g. a mirrored laptop webcam). Keyboard tilt is not affected.")]
+        [SerializeField] bool invertTiltX;
+        [Tooltip("Flip forward/back marker tilt. Keyboard tilt is not affected.")]
+        [SerializeField] bool invertTiltZ;
 
         [Header("Calibration")]
         [Tooltip("Calibrate automatically the first time the marker has been seen for a moment.")]
@@ -166,9 +170,14 @@ namespace RVA
                 return gravityDirection;
 
             // "Down" as it was when calibrated, expressed in the maze's current frame.
-            Quaternion mazeRotation = tracker.SmoothedRotation * Quaternion.Euler(0f, RotationOffset, 0f);
             Vector3 down = calibratedRotation * Vector3.down;
-            Vector3 local = Quaternion.Inverse(mazeRotation) * down;
+            Vector3 markerLocal = Quaternion.Inverse(tracker.SmoothedRotation) * down;
+
+            // Flip in the marker's frame, before the rotation offset, so the slider doesn't swap the axes.
+            if (invertTiltX) markerLocal.x = -markerLocal.x;
+            if (invertTiltZ) markerLocal.z = -markerLocal.z;
+
+            Vector3 local = Quaternion.Euler(0f, -RotationOffset, 0f) * markerLocal;
             return LimitTilt(local);
         }
 
