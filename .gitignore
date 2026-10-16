@@ -66,3 +66,18 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+# Vuforia Engine package (138 MB, above GitHub's 100 MB file limit).
+# Each person installs it once from the .unitypackage: see Docs/SETUP.md.
+/[Pp]ackages/com.ptc.vuforia.engine-*.tgz
+/[Aa]ssets/[Ee]ditor/[Mm]igration/*.tgz
+/[Aa]ssets/[Ee]ditor/[Mm]igration/*.tgz.meta
+
+# Vuforia runtime data
+/QCAR/
+
+# IDE files
+.vscode/
+*.slnx
+
+/[Aa]ssets/[Mm]arkers
+/[Aa]ssets/Resources/VuforiaConfiguration.asset
