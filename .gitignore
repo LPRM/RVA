@@ -81,3 +81,6 @@ crashlytics-build.properties
 
 /[Aa]ssets/[Mm]arkers
 /[Aa]ssets/Resources/VuforiaConfiguration.asset
+
+/[Aa]ssets/_Recovery/
+/[Aa]ssets/_Recovery.meta

@@ -333,7 +333,7 @@ MonoBehaviour:
   mImageTargetType: 3
   mWidth: 0.2
   mHeight: 0.19849056
-  mRuntimeTexture: {fileID: 2800000, guid: 6fd193ccabf8d944cb58c6a3befb6b68, type: 3}
+  mRuntimeTexture: {fileID: 0}
   mMotionHint: 1
   mTrackingOptimization: 0
   mTrackingOptimizationNeedsUpgrade: 0
@@ -425,6 +425,7 @@ GameObject:
   - component: {fileID: 772147169}
   - component: {fileID: 772147168}
   - component: {fileID: 772147167}
+  - component: {fileID: 772147172}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -572,6 +573,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &772147172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 772147166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80a9450b7a6c7d7499e7eff72c6c1fe6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RVA.Game::RVA.CheckpointManager
+  builder: {fileID: 0}
+  tracker: {fileID: 0}
+  startWithKeyboardInEditor: 1
 --- !u!1 &797868349
 GameObject:
   m_ObjectHideFlags: 0
