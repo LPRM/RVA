@@ -333,7 +333,7 @@ MonoBehaviour:
   mImageTargetType: 3
   mWidth: 0.2
   mHeight: 0.19849056
-  mRuntimeTexture: {fileID: 0}
+  mRuntimeTexture: {fileID: 2800000, guid: 6fd193ccabf8d944cb58c6a3befb6b68, type: 3}
   mMotionHint: 1
   mTrackingOptimization: 0
   mTrackingOptimizationNeedsUpgrade: 0
@@ -371,6 +371,7 @@ MonoBehaviour:
   mazeTransform: {fileID: 0}
   mazeTracker: {fileID: 0}
   builder: {fileID: 0}
+  game: {fileID: 0}
   openDistanceCells: 3
   closeDistanceCells: 4
   debugKey: {fileID: 0}
@@ -389,8 +390,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af67b60752153594e84034ad0523d66b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RVA.Game::RVA.KeyVisual
-  height: 0.6
-  thickness: 0.08
+  stickLength: 0.35
+  stickDiameter: 0.04
+  stickRotation: {x: 90, y: 0, z: 0}
+  tipIsContactPoint: 1
   redColor: {r: 0.9, g: 0.15, b: 0.15, a: 1}
   blueColor: {r: 0.15, g: 0.35, b: 0.95, a: 1}
 --- !u!114 &706291462
@@ -426,6 +429,7 @@ GameObject:
   - component: {fileID: 772147168}
   - component: {fileID: 772147167}
   - component: {fileID: 772147172}
+  - component: {fileID: 772147173}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -486,6 +490,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RVA.Game::RVA.MazeGravity
   tracker: {fileID: 0}
   builder: {fileID: 0}
+  game: {fileID: 0}
   gravityStrength: 15
   maxTiltDegrees: 38.5
   deadZoneDegrees: 2
@@ -586,8 +591,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RVA.Game::RVA.CheckpointManager
   builder: {fileID: 0}
-  tracker: {fileID: 0}
-  startWithKeyboardInEditor: 1
+  game: {fileID: 0}
+  activeCheckpointColor: {r: 1, g: 0.4, b: 0.7, a: 1}
+  inactiveCheckpointColor: {r: 1, g: 0.82, b: 0.15, a: 1}
+  atCheckpointDistance: 0.5
+  enableDebugKey: 1
+--- !u!114 &772147173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 772147166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22c2437a31c688549a840384479f813c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RVA.Game::RVA.GameManager
+  builder: {fileID: 0}
+  gravity: {fileID: 0}
+  levels: []
+  loadFirstLevelOnStart: 1
+  mode: 0
+  enableDebugKeys: 1
+  showDebugOverlay: 1
+  logEvents: 1
 --- !u!1 &797868349
 GameObject:
   m_ObjectHideFlags: 0
@@ -713,6 +741,7 @@ MonoBehaviour:
   mazeTransform: {fileID: 0}
   mazeTracker: {fileID: 0}
   builder: {fileID: 0}
+  game: {fileID: 0}
   openDistanceCells: 3
   closeDistanceCells: 4
   debugKey: {fileID: 0}
@@ -731,8 +760,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af67b60752153594e84034ad0523d66b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RVA.Game::RVA.KeyVisual
-  height: 0.6
-  thickness: 0.08
+  stickLength: 0.35
+  stickDiameter: 0.04
+  stickRotation: {x: 90, y: 0, z: 0}
+  tipIsContactPoint: 1
   redColor: {r: 0.9, g: 0.15, b: 0.15, a: 1}
   blueColor: {r: 0.15, g: 0.35, b: 0.95, a: 1}
 --- !u!114 &797868356

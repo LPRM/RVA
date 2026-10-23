@@ -107,6 +107,7 @@ So we should get a UWP build of an empty AR scene running with the webcam in the
 - `GameManager`: game states, timer, Normal and Time Trial modes, win.
 - Goal particles and the three level grids.
 - **Done when:** all three levels can be played start to finish using the keys.
+**Done**
 
 **Phase 3: weather and UI (25–29 Oct)**
 - `WeatherService`: gets Porto weather from Open-Meteo, with a timeout and a fallback to clear weather.
