@@ -46,6 +46,10 @@ namespace RVA
         public bool IsTracked { get; private set; }
         public GateColor KeyColor => color;
 
+        /// <summary>Point used to measure the distance to the gates (e.g. the tip of KeyVisual's stick).
+        /// When null, the marker's centre is used.</summary>
+        public Transform ContactPoint { get; set; }
+
         /// <summary>Distance in cells from the key to the nearest gate of this colour (infinity when unknown).</summary>
         public float NearestDistance { get; private set; } = float.PositiveInfinity;
 
@@ -212,7 +216,9 @@ namespace RVA
                 return;
             }
 
-            Vector3 keyPosition = debugKey != null ? debugKey.position : transform.position;
+            Vector3 keyPosition = debugKey != null ? debugKey.position
+                                : ContactPoint != null ? ContactPoint.position
+                                : transform.position;
 
             foreach (var (gate, visual) in gates)
             {
