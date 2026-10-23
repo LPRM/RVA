@@ -23,6 +23,7 @@ namespace RVA
         [Header("References (found automatically when empty)")]
         [SerializeField] MazeTracker tracker;
         [SerializeField] MazeBuilder builder;
+        [SerializeField] GameManager game;
 
         [Header("Gravity")]
         [Tooltip("Strength of gravity in the physics maze, in cells per second squared.")]
@@ -90,6 +91,8 @@ namespace RVA
                 builder = FindAnyObjectByType<MazeBuilder>();
             if (tracker == null)
                 tracker = FindAnyObjectByType<MazeTracker>();
+            if (game == null)
+                game = FindAnyObjectByType<GameManager>();
 
             bool noMarker = tracker == null || !MazeTracker.VuforiaAvailable;
             bool keyboardFirst = Application.isEditor && startWithKeyboardInEditor;
@@ -227,7 +230,8 @@ namespace RVA
                 ToggleSource();
             if (keyboard.cKey.wasPressedThisFrame)
                 Calibrate();
-            if (keyboard.rKey.wasPressedThisFrame && builder != null && builder.Ball != null)
+            bool canRespawn = game == null || game.IsPlaying;
+            if (keyboard.rKey.wasPressedThisFrame && canRespawn && builder != null && builder.Ball != null)
                 builder.Ball.RespawnAtSpawnPoint();
             if (keyboard.commaKey.wasPressedThisFrame)
                 SetRotationOffset(RotationOffset - 15f);

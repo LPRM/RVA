@@ -26,6 +26,9 @@ namespace RVA
     ///
     /// Lines starting with ';' are comments and blank lines are ignored. Rows shorter than the
     /// longest row are padded with walls.
+    ///
+    /// Lines starting with '@' are directives, placed anywhere before or after the grid:
+    ///   @time 120   Time Trial countdown for this level, in seconds.
     /// </summary>
     public sealed class MazeLayout
     {
@@ -37,15 +40,18 @@ namespace RVA
         public (int row, int col) Start { get; }
         public IReadOnlyList<string> Warnings => warnings;
 
+        public float TimeLimit { get; }
+
         public MazeCell this[int row, int col] => cells[row, col];
 
-        MazeLayout(MazeCell[,] cells, (int row, int col) start, List<string> warnings)
+        MazeLayout(MazeCell[,] cells, (int row, int col) start, float timeLimit, List<string> warnings)
         {
             this.cells = cells;
             this.warnings = warnings;
             Rows = cells.GetLength(0);
             Cols = cells.GetLength(1);
             Start = start;
+            TimeLimit = timeLimit;
         }
 
         public bool InBounds(int row, int col) => row >= 0 && row < Rows && col >= 0 && col < Cols;
@@ -101,12 +107,20 @@ namespace RVA
                 throw new ArgumentNullException(nameof(text));
 
             var lines = new List<string>();
+            var warnings = new List<string>();
+            float timeLimit = 0f;
+
             foreach (string raw in text.TrimStart('﻿').Split('\n'))
             {
                 string line = raw.TrimEnd('\r', ' ', '\t');
                 string trimmed = line.TrimStart();
                 if (trimmed.Length == 0 || trimmed[0] == ';')
                     continue;
+                if (trimmed[0] == '@')
+                {
+                    ParseDirective(trimmed, ref timeLimit, warnings);
+                    continue;
+                }
                 lines.Add(line);
             }
 
@@ -118,7 +132,6 @@ namespace RVA
             foreach (string line in lines)
                 cols = Math.Max(cols, line.Length);
 
-            var warnings = new List<string>();
             var cells = new MazeCell[rows, cols];
             (int row, int col)? start = null;
 
@@ -171,7 +184,7 @@ namespace RVA
                 cells[start.Value.row, start.Value.col] = MazeCell.Start;
             }
 
-            var layout = new MazeLayout(cells, start.Value, warnings);
+            var layout = new MazeLayout(cells, start.Value, timeLimit, warnings);
             bool hasExit = false;
             foreach (var _ in layout.CellsOfType(MazeCell.Exit))
             {
@@ -182,6 +195,34 @@ namespace RVA
                 warnings.Add("The maze has no exit (E).");
 
             return layout;
+        }
+
+        /// <summary>Handles one "@name value" line.</summary>
+        static void ParseDirective(string line, ref float timeLimit, List<string> warnings)
+        {
+            string[] parts = line.Substring(1).Split(new[] { ' ', '\t', ':', '=' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0)
+            {
+                warnings.Add("Empty directive line ('@' with nothing after it); ignored.");
+                return;
+            }
+
+            string name = parts[0].ToLowerInvariant();
+            string value = parts.Length > 1 ? parts[1] : "";
+
+            switch (name)
+            {
+                case "time":
+                    if (float.TryParse(value, System.Globalization.NumberStyles.Float,
+                            System.Globalization.CultureInfo.InvariantCulture, out float seconds) && seconds > 0f)
+                        timeLimit = seconds;
+                    else
+                        warnings.Add($"'@time' needs a number of seconds greater than 0, got '{value}'; ignored.");
+                    break;
+                default:
+                    warnings.Add($"Unknown directive '@{parts[0]}'; ignored.");
+                    break;
+            }
         }
 
         public override string ToString()
