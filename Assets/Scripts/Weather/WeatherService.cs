@@ -71,14 +71,17 @@ namespace RVA
         }
 
         void Update()
-        {
-            if (Keyboard.current.wKey.wasPressedThisFrame)
+        {   
+            if (Keyboard.current != null)
             {
-                Refresh();
+                if (Keyboard.current.wKey.wasPressedThisFrame)
+                {
+                    Refresh();
+                }   
             }
         }
 
-        void Publish(WeatherInfo info)
+        public void Publish(WeatherInfo info)
         {
             Current = info;
 
@@ -138,6 +141,7 @@ namespace RVA
             {
                 game.LevelStarted -= OnLevelStarted;
             }
+            fetching = false;
         }
 
         IEnumerator FetchRoutine()
@@ -198,6 +202,7 @@ namespace RVA
 
                 if (response == null || response.current == null)
                 {
+                    Debug.LogWarning($"[WeatherService] Request failed: {req.error}");
                     PublishFallback();
                 }
                 else
