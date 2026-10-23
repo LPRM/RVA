@@ -17,6 +17,7 @@ namespace RVA
         }
 
         [SerializeField] MazeBuilder builder;
+        [SerializeField] GameManager game;
 
         [SerializeField] Color activeCheckpointColor = new Color(1f, 0.4f, 0.7f);
         [Tooltip("Colour of a checkpoint the ball has not reached (same as Checkpoint Look in the MazeBuilder).")]
@@ -40,7 +41,11 @@ namespace RVA
                 builder = GetComponent<MazeBuilder>();
             if (builder == null)
                 builder = FindAnyObjectByType<MazeBuilder>();
+            if (game == null)
+                game = FindAnyObjectByType<GameManager>();
         }
+
+        bool CanAct => game == null || game.IsPlaying;
 
         void OnEnable()
         {
@@ -98,7 +103,7 @@ namespace RVA
         /// </summary>
         public void Undo()
         {
-            if (ball == null || history.Count == 0)
+            if (ball == null || history.Count == 0 || !CanAct)
             {
                 return;
             }

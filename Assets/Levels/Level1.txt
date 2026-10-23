@@ -2,6 +2,8 @@
 ; #  parede        .  chão          S  início       E  saída
 ; O  buraco        C  checkpoint    R  portão vermelho   B  portão azul
 ; Linhas começadas por ';' são comentários. A primeira linha da grelha é o lado de cima do marcador.
+; Linhas começadas por '@' são diretivas: @time é o tempo do modo contra-relógio, em segundos.
+@time 90
 ###########
 #S....#...#
 #.###.#.#.#

@@ -1,0 +1,14 @@
+; Nível 3: dois portões, quatro buracos e dois checkpoints. Três zonas separadas por portões.
+@time 150
+#############
+#S..#.......#
+#.#.#.##O##.#
+#...........#
+#####R#######
+#.....#.....#
+#.###.#.###O#
+#.....C...#.#
+#########B###
+#.O.#.O.#.C.#
+#E..........#
+#############

@@ -25,6 +25,8 @@ namespace RVA
         [Tooltip("Found on mazeTransform when empty.")]
         [SerializeField] MazeTracker mazeTracker;
         [SerializeField] MazeBuilder builder;
+        [Tooltip("Found automatically when empty. Gates only move while the game is Playing; without a GameManager they always follow the key.")]
+        [SerializeField] GameManager game;
 
         [Tooltip("The gate opens when the key is closer than this, in maze cells (1 = one grid square).")]
         [SerializeField, Min(0f)] float openDistanceCells = 3f;
@@ -101,6 +103,8 @@ namespace RVA
                 mazeTracker = FindAnyObjectByType<MazeTracker>();
             if (mazeTransform == null && mazeTracker != null)
                 mazeTransform = mazeTracker.transform;
+            if (game == null)
+                game = FindAnyObjectByType<GameManager>();
 
             if (builder == null)
                 Debug.LogWarning("[KeyGate] No MazeBuilder in the scene, so there are no gates to open.", this);
@@ -182,6 +186,10 @@ namespace RVA
         void UpdateGates()
         {
             NearestDistance = float.PositiveInfinity;
+
+            // Not playing (paused, won, time up, menu): the gates keep their state.
+            if (game != null && !game.IsPlaying)
+                return;
 
             // Maze lost: its pose is stale, so the distances would be wrong. Keep the gates as they are.
             // The debug key skips this check so it can be tested without the maze marker in view.
