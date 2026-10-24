@@ -125,7 +125,7 @@ namespace RVA
 
             if (state == GameState.Won && resultText != null && gameManager != null)
             {
-                string label = gameManager.Mode == GameMode.TimeTrial ? "Tempo restante" : "Tempo";
+                string label = gameManager.Mode == GameMode.TimeTrial ? "Time Left: " : "Time";
                 resultText.text = $"{label}: {GameManager.FormatTime(gameManager.LastResultSeconds)}";
             }
         }
