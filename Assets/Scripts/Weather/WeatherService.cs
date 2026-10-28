@@ -50,6 +50,8 @@ namespace RVA
         [SerializeField] int timeout = 5;
 
         [SerializeField] bool logEvents = true;
+        [Tooltip("Show the weather in the debug box at the top left.")]
+        [SerializeField] bool showDebugOverlay = true;
 
         enum Mode { Live, ForceClear, ForceRain, ForceNight }
         [Tooltip("Change weather settings.")]
@@ -59,6 +61,19 @@ namespace RVA
 
         public WeatherInfo Current {get; private set; }
         public event Action<WeatherInfo> WeatherChanged;
+
+        /// <summary>True once a result has been published (Current is only a default before that).</summary>
+        public bool HasResult { get; private set; }
+        public bool IsFetching => fetching;
+
+        /// <summary>Short text for the HUD, e.g. "Rain, night".</summary>
+        public static string Describe(WeatherInfo info)
+        {
+            return $"{info.kind}, {(info.isNight ? "night" : "day")}";
+        }
+
+        /// <summary>Where Current came from: "API", "forced (ForceRain)" or "fallback (no connection)".</summary>
+        public string SourceText => mode != Mode.Live ? $"forced ({mode})" : Current.fromApi ? "API" : "fallback (no connection)";
 
         void OnLevelStarted(int level) { Refresh(); }
 
@@ -84,6 +99,7 @@ namespace RVA
         public void Publish(WeatherInfo info)
         {
             Current = info;
+            HasResult = true;
 
             if (logEvents)
             {
@@ -219,7 +235,23 @@ namespace RVA
             fetching = false;
         }
 
+        void OnGUI()
+        {
+            if (!showDebugOverlay)
+                return;
 
+            string weather = fetching ? "a obter..." : HasResult ? Describe(Current) : "ainda nenhum";
+            string text =
+                $"Meteo: {weather}   [W refresh]\n" +
+                $"Origem: {(HasResult ? SourceText : "-")}";
+
+            // Same scaling as the other overlays, placed just below GameManager's box.
+            float scale = Mathf.Max(1f, Screen.height / 540f);
+            Matrix4x4 previousMatrix = GUI.matrix;
+            GUI.matrix = Matrix4x4.Scale(new Vector3(scale, scale, 1f));
+            GUI.Box(new Rect(8f, 196f, 360f, 42f), GUIContent.none);
+            GUI.Label(new Rect(16f, 200f, 350f, 36f), text);
+            GUI.matrix = previousMatrix;
+        }
     }
-        
 }

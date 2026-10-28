@@ -13,6 +13,7 @@ namespace RVA
     {
         [Header("References (found automatically when empty)")]
         [SerializeField] GameManager gameManager;
+        [SerializeField] WeatherService weatherService;
 
         [Header("Panels")]
         [Tooltip("First menu page: Normal, Time Trial, Quit.")]
@@ -29,7 +30,7 @@ namespace RVA
         [SerializeField] TMP_Text modeText;
         [SerializeField] TMP_Text timerText;
         [SerializeField] TMP_Text levelText;
-        [Tooltip("Filled in later by the weather (Phase 3).")]
+        [Tooltip("On the HUD: the current weather, e.g. \"Weather: Rain, night\".")]
         [SerializeField] TMP_Text weatherText;
         [Tooltip("On the win panel: the final time.")]
         [SerializeField] TMP_Text resultText;
@@ -40,18 +41,24 @@ namespace RVA
                 gameManager = FindAnyObjectByType<GameManager>();
             if (gameManager == null)
                 Debug.LogError("[UIManager] No GameManager in the scene.", this);
+            if (weatherService == null)
+                weatherService = FindAnyObjectByType<WeatherService>();
         }
 
         void OnEnable()
         {
             if (gameManager != null)
                 gameManager.StateChanged += ShowState;
+            if (weatherService != null)
+                weatherService.WeatherChanged += ShowWeather;
         }
 
         void OnDisable()
         {
             if (gameManager != null)
                 gameManager.StateChanged -= ShowState;
+            if (weatherService != null)
+                weatherService.WeatherChanged -= ShowWeather;
         }
 
         void Start()
@@ -60,6 +67,15 @@ namespace RVA
             // so show the first screen by hand.
             if (gameManager != null)
                 ShowState(gameManager.State);
+
+            // Same for the weather: show the result if it already arrived, otherwise a placeholder.
+            if (weatherText != null)
+            {
+                if (weatherService != null && weatherService.HasResult)
+                    ShowWeather(weatherService.Current);
+                else
+                    weatherText.text = weatherService != null ? "Weather: ..." : "";
+            }
         }
 
         void Update()
@@ -128,6 +144,12 @@ namespace RVA
                 string label = gameManager.Mode == GameMode.TimeTrial ? "Time Left: " : "Time";
                 resultText.text = $"{label}: {GameManager.FormatTime(gameManager.LastResultSeconds)}";
             }
+        }
+
+        void ShowWeather(WeatherInfo info)
+        {
+            if (weatherText != null)
+                weatherText.text = "Weather: " + WeatherService.Describe(info);
         }
 
         static void SetActive(GameObject panel, bool active)
