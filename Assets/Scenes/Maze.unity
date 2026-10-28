@@ -2857,6 +2857,8 @@ GameObject:
   - component: {fileID: 772147167}
   - component: {fileID: 772147172}
   - component: {fileID: 772147173}
+  - component: {fileID: 772147175}
+  - component: {fileID: 772147174}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -3052,6 +3054,49 @@ MonoBehaviour:
   enableDebugKeys: 1
   showDebugOverlay: 1
   logEvents: 1
+--- !u!114 &772147174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 772147166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 385420acb3f51404b818a8481c5eaeec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RVA.Game::RVA.WeatherEffects
+  logEvents: 1
+  weatherService: {fileID: 0}
+  builder: {fileID: 0}
+  sun: {fileID: 203844588}
+  rain: {fileID: 911887286}
+  clearIntensity: 1.2
+  clearColor: {r: 1, g: 0.96, b: 0.88, a: 1}
+  rainIntensity: 0.6
+  rainColor: {r: 0.7, g: 0.74, b: 0.8, a: 1}
+  nightIntensity: 0.25
+  nightColor: {r: 0.35, g: 0.45, b: 0.8, a: 1}
+  rainDampingMultiplier: 0.3
+--- !u!114 &772147175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 772147166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbeb5f3acbfaaa8418289cfdee256e44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RVA.Game::RVA.WeatherService
+  game: {fileID: 0}
+  latitude: 41.15
+  longitude: -8.61
+  timeout: 5
+  logEvents: 1
+  showDebugOverlay: 1
+  mode: 0
 --- !u!1 &797868349
 GameObject:
   m_ObjectHideFlags: 0
@@ -3354,6 +3399,16 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 882429522}
   m_CullTransparentMesh: 1
+--- !u!4 &911887284 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1105032415359342655, guid: e08f208426643c34f8257883861c5d5c, type: 3}
+  m_PrefabInstance: {fileID: 5579353956252443060}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &911887286 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 589647112819404053, guid: e08f208426643c34f8257883861c5d5c, type: 3}
+  m_PrefabInstance: {fileID: 5579353956252443060}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &967196433
 GameObject:
   m_ObjectHideFlags: 0
@@ -5219,6 +5274,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RVA.Game::RVA.UIManager
   gameManager: {fileID: 0}
+  weatherService: {fileID: 0}
   menuPanel: {fileID: 420670338}
   levelSelectPanel: {fileID: 1379269513}
   hudPanel: {fileID: 618119298}
@@ -8387,7 +8443,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 911887284}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1967057180
@@ -8788,6 +8845,63 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2081470768}
   m_CullTransparentMesh: 1
+--- !u!1001 &5579353956252443060
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1955907074}
+    m_Modifications:
+    - target: {fileID: 855861172515986271, guid: e08f208426643c34f8257883861c5d5c, type: 3}
+      propertyPath: m_Name
+      value: Rain
+      objectReference: {fileID: 0}
+    - target: {fileID: 1105032415359342655, guid: e08f208426643c34f8257883861c5d5c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1105032415359342655, guid: e08f208426643c34f8257883861c5d5c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1105032415359342655, guid: e08f208426643c34f8257883861c5d5c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1105032415359342655, guid: e08f208426643c34f8257883861c5d5c, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 1105032415359342655, guid: e08f208426643c34f8257883861c5d5c, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 1105032415359342655, guid: e08f208426643c34f8257883861c5d5c, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1105032415359342655, guid: e08f208426643c34f8257883861c5d5c, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1105032415359342655, guid: e08f208426643c34f8257883861c5d5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 1105032415359342655, guid: e08f208426643c34f8257883861c5d5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1105032415359342655, guid: e08f208426643c34f8257883861c5d5c, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e08f208426643c34f8257883861c5d5c, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
