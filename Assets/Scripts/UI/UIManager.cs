@@ -35,6 +35,12 @@ namespace RVA
         [Tooltip("On the win panel: the final time.")]
         [SerializeField] TMP_Text resultText;
 
+        [Header("Win panel buttons")]
+        [Tooltip("Shown after every level except the last.")]
+        [SerializeField] GameObject nextLevelButton;
+        [Tooltip("Shown instead of Next Level after the last level. Its On Click calls UIManager.ShowLevelSelect.")]
+        [SerializeField] GameObject levelSelectButton;
+
         void Awake()
         {
             if (gameManager == null)
@@ -114,6 +120,20 @@ namespace RVA
             SetActive(levelSelectPanel, false);
         }
 
+        /// <summary>
+        /// Win panel button after the last level: back to the level page, keeping the current mode.
+        /// </summary>
+        public void ShowLevelSelect()
+        {
+            if (gameManager == null)
+                return;
+
+            // ReturnToMenu clears the maze; its StateChanged shows the first menu page,
+            // so switch to the level page afterwards.
+            gameManager.ReturnToMenu();
+            ChooseMode(gameManager.Mode);
+        }
+
         // ------------------------------------------------------------- internals
 
         void ChooseMode(GameMode mode)
@@ -141,8 +161,16 @@ namespace RVA
 
             if (state == GameState.Won && resultText != null && gameManager != null)
             {
-                string label = gameManager.Mode == GameMode.TimeTrial ? "Time Left: " : "Time";
+                string label = gameManager.Mode == GameMode.TimeTrial ? "Time Left" : "Time";
                 resultText.text = $"{label}: {GameManager.FormatTime(gameManager.LastResultSeconds)}";
+            }
+
+            if (state == GameState.Won && gameManager != null)
+            {
+                // After the last level there is no next one: offer the level page instead.
+                bool lastLevel = gameManager.LevelIndex >= gameManager.LevelCount - 1;
+                SetActive(nextLevelButton, !lastLevel);
+                SetActive(levelSelectButton, lastLevel);
             }
         }
 
