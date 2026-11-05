@@ -3108,24 +3108,24 @@ MonoBehaviour:
   floorLook:
     material: {fileID: 0}
     mesh: {fileID: 0}
-    color: {r: 0.323, g: 0.3, b: 0.255, a: 1}
-    albedo: {fileID: 2800000, guid: f0cbd43daba83fe47b7110eaf583a01d, type: 3}
+    color: {r: 0.756, g: 0.756, b: 0.756, a: 1}
+    albedo: {fileID: 2800000, guid: 7b2e9c14a6f84d0e9c3b51a8d4e7f026, type: 3}
     albedoScale: {x: 1, y: 1}
     metallic: 0
     smoothness: 0.02
   wallLook:
     material: {fileID: 0}
     mesh: {fileID: 0}
-    color: {r: 1.15, g: 1.05, b: 0.95, a: 1}
-    albedo: {fileID: 2800000, guid: 0833eeffad7806d439d2e26df951db5a, type: 3}
+    color: {r: 0.95, g: 0.95, b: 0.95, a: 1}
+    albedo: {fileID: 2800000, guid: 7b2e9c14a6f84d0e9c3b51a8d4e7f026, type: 3}
     albedoScale: {x: 2, y: 2}
     metallic: 0
     smoothness: 0.02
   trimLook:
     material: {fileID: 0}
     mesh: {fileID: 0}
-    color: {r: 0.425, g: 0.39, b: 0.34, a: 1}
-    albedo: {fileID: 2800000, guid: f0cbd43daba83fe47b7110eaf583a01d, type: 3}
+    color: {r: 0.99225, g: 0.99225, b: 0.99225, a: 1}
+    albedo: {fileID: 2800000, guid: 7b2e9c14a6f84d0e9c3b51a8d4e7f026, type: 3}
     albedoScale: {x: 2, y: 2}
     metallic: 0
     smoothness: 0.02
@@ -3181,6 +3181,11 @@ MonoBehaviour:
   candleModel: {fileID: 2759817534889948315, guid: f7e0df92f27b0054586003a80a39da42, type: 3}
   candleFlameColor: {r: 1, g: 0.55, b: 0.18, a: 1}
   candleLightIntensity: 6
+  wallLights: 1
+  wallLightModel: {fileID: 0}
+  wallLightColor: {r: 1, g: 0.95, b: 0.8, a: 1}
+  wallLightIntensity: 1.2
+  wallLightSpacing: 4
 --- !u!4 &772147171
 Transform:
   m_ObjectHideFlags: 0

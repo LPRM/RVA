@@ -92,7 +92,7 @@ namespace RVA
         [SerializeField, Range(0f, 1f)] float ballFriction = 0.4f;
         [SerializeField, Range(0f, 1f)] float ballBounciness = 0.2f;
 
-        [Header("Look (castle workshop: oak, brass, iron)")]
+        [Header("Look (concrete tiles, brass, iron)")]
         [SerializeField] PieceLook floorLook = new PieceLook(new Color(0.72f, 0.55f, 0.32f), 0f, 0.02f);
         [SerializeField] PieceLook wallLook = new PieceLook(new Color(0.38f, 0.24f, 0.14f), 0f, 0.02f);
         [SerializeField] PieceLook trimLook = new PieceLook(new Color(0.45f, 0.32f, 0.18f), 0f, 0.02f);
