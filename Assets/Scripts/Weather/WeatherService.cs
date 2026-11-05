@@ -237,7 +237,7 @@ namespace RVA
 
         void OnGUI()
         {
-            if (!showDebugOverlay)
+            if (!showDebugOverlay || !DebugOverlay.Visible)
                 return;
 
             string weather = fetching ? "a obter..." : HasResult ? Describe(Current) : "ainda nenhum";

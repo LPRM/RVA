@@ -14,6 +14,7 @@ namespace RVA
         [Header("References (found automatically when empty)")]
         [SerializeField] GameManager gameManager;
         [SerializeField] WeatherService weatherService;
+        [SerializeField] MazeGravity gravity;
 
         [Header("Panels")]
         [Tooltip("First menu page: Normal, Time Trial, Quit.")]
@@ -41,6 +42,10 @@ namespace RVA
         [Tooltip("Shown instead of Next Level after the last level. Its On Click calls UIManager.ShowLevelSelect.")]
         [SerializeField] GameObject levelSelectButton;
 
+        [Header("Start hint")]
+        [Tooltip("Text such as 'Press K to start'. Shown during a level while the ball is still tilted with the keyboard; hidden once K switches to the marker.")]
+        [SerializeField] GameObject startHint;
+
         void Awake()
         {
             if (gameManager == null)
@@ -49,6 +54,8 @@ namespace RVA
                 Debug.LogError("[UIManager] No GameManager in the scene.", this);
             if (weatherService == null)
                 weatherService = FindAnyObjectByType<WeatherService>();
+            if (gravity == null)
+                gravity = FindAnyObjectByType<MazeGravity>();
         }
 
         void OnEnable()
@@ -97,6 +104,12 @@ namespace RVA
 
             if (levelText != null)
                 levelText.text = gameManager.CurrentLevelName;
+
+            if (startHint != null)
+            {
+                bool keyboardTilt = gravity != null && gravity.Source == MazeGravity.TiltSource.Keyboard;
+                SetActive(startHint, gameManager.State == GameState.Playing && keyboardTilt);
+            }
         }
 
         // ------------------------------------------------------------- buttons (On Click)

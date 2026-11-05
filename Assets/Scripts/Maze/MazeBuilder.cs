@@ -427,6 +427,7 @@ namespace RVA
             var gateObject = new GameObject($"{color} gate {row + 1},{col + 1}");
             gateObject.transform.SetParent(PhysicsRoot, false);
             gateObject.transform.localPosition = cellPosition;
+            gateObject.transform.localRotation = GateRotation(row, col);
 
             var box = gateObject.AddComponent<BoxCollider>();
             box.center = new Vector3(0f, wallHeight * 0.5f, 0f);
@@ -494,6 +495,7 @@ namespace RVA
                 var gateObject = new GameObject(gate.name);
                 gateObject.transform.SetParent(VisualRoot, false);
                 gateObject.transform.localPosition = CellToLocal(gate.Row, gate.Col);
+                gateObject.transform.localRotation = GateRotation(gate.Row, gate.Col);
                 AddGateMesh(gateObject.transform, gate.KeyColor);
                 mirrorPairs.Add(new MirrorPair(gate.transform, gateObject.transform, false));
             }
@@ -642,6 +644,7 @@ namespace RVA
             var root = new GameObject($"Exit {row + 1},{col + 1}");
             root.transform.SetParent(parent, false);
             root.transform.localPosition = cell;
+            root.transform.localRotation = ExitRotation(row, col);
 
             AddMesh(root.transform, "Pad", PrimitiveType.Cube, Vector3.up * 0.02f, new Vector3(0.85f, 0.04f, 0.85f), exitLook);
             AddMesh(root.transform, "Post L", PrimitiveType.Cube, new Vector3(-0.32f, wallHeight * 0.35f, 0f), new Vector3(0.12f, wallHeight * 0.7f, 0.12f), trimLook);
@@ -650,6 +653,44 @@ namespace RVA
 
             MazeGoal goal = root.AddComponent<MazeGoal>();
             goal.Init(exitLook.color);
+        }
+
+        /// <summary>
+        /// The gate model spans the X axis, so it blocks a corridor that runs along Z (open above and
+        /// below in the grid). In a corridor that runs along X (open left and right) it is turned 90°
+        /// so its posts sit against the walls instead of across the path.
+        /// </summary>
+        Quaternion GateRotation(int row, int col)
+        {
+            bool openLeftRight = IsOpenCell(row, col - 1) || IsOpenCell(row, col + 1);
+            bool openUpDown = IsOpenCell(row - 1, col) || IsOpenCell(row + 1, col);
+            return openLeftRight && !openUpDown ? Quaternion.Euler(0f, 90f, 0f) : Quaternion.identity;
+        }
+
+        /// <summary>
+        /// The exit arch has its posts on the X sides, so the ball walks through it along Z. The arch is
+        /// turned to face the longest open corridor next to it (the way the ball arrives), which also
+        /// works when the exit sits in a corner.
+        /// </summary>
+        Quaternion ExitRotation(int row, int col)
+        {
+            int alongX = Mathf.Max(OpenRun(row, col, 0, -1), OpenRun(row, col, 0, 1));
+            int alongZ = Mathf.Max(OpenRun(row, col, -1, 0), OpenRun(row, col, 1, 0));
+            return alongX > alongZ ? Quaternion.Euler(0f, 90f, 0f) : Quaternion.identity;
+        }
+
+        /// <summary>How many open cells follow in a straight line from (row, col) in one direction.</summary>
+        int OpenRun(int row, int col, int dRow, int dCol)
+        {
+            int count = 0;
+            for (int r = row + dRow, c = col + dCol; IsOpenCell(r, c); r += dRow, c += dCol)
+                count++;
+            return count;
+        }
+
+        bool IsOpenCell(int row, int col)
+        {
+            return Layout.InBounds(row, col) && Layout[row, col] != MazeCell.Wall;
         }
 
         void AddGateMesh(Transform gateTransform, GateColor color)

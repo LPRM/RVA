@@ -228,6 +228,8 @@ namespace RVA
 
             if (keyboard.kKey.wasPressedThisFrame)
                 ToggleSource();
+            if (keyboard.hKey.wasPressedThisFrame)
+                DebugOverlay.Toggle();
             if (keyboard.cKey.wasPressedThisFrame)
                 Calibrate();
             bool canRespawn = game == null || game.IsPlaying;
@@ -241,7 +243,7 @@ namespace RVA
 
         void OnGUI()
         {
-            if (!showDebugOverlay)
+            if (!showDebugOverlay || !DebugOverlay.Visible)
                 return;
 
             string tracking = tracker == null

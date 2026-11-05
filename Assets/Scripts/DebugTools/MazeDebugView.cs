@@ -11,8 +11,8 @@ namespace RVA
     public class MazeDebugView : MonoBehaviour
     {
         [SerializeField] MazeBuilder builder;
-        [SerializeField] bool showInEditor = true;
-        [SerializeField] bool showInBuild = false;
+        [Tooltip("Show the view as soon as the game starts. Off by default; V shows or hides it.")]
+        [SerializeField] bool showOnStart = false;
         [Tooltip("Part of the screen used by the view (x, y, width, height, from 0 to 1).")]
         [SerializeField] Rect viewport = new Rect(0.62f, 0.02f, 0.36f, 0.48f);
         [Tooltip("Angle of the view above the maze: 90 looks straight down.")]
@@ -40,7 +40,7 @@ namespace RVA
             viewCamera.rect = viewport;
             if (builder != null)
                 viewCamera.cullingMask = 1 << builder.HiddenLayer;
-            viewCamera.enabled = Application.isEditor ? showInEditor : showInBuild;
+            viewCamera.enabled = showOnStart;
         }
 
         void Update()

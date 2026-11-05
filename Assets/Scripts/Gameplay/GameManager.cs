@@ -319,7 +319,7 @@ namespace RVA
 
         void OnGUI()
         {
-            if (!showDebugOverlay)
+            if (!showDebugOverlay || !DebugOverlay.Visible)
                 return;
 
             string level = LevelIndex >= 0 ? $"{LevelIndex + 1}/{levels.Count} {CurrentLevelName}" : "nenhum";
