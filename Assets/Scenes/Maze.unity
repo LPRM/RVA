@@ -3107,28 +3107,80 @@ MonoBehaviour:
   ballBounciness: 0.2
   floorLook:
     material: {fileID: 0}
+    mesh: {fileID: 0}
     color: {r: 0.86, g: 0.8, b: 0.68, a: 1}
+    albedo: {fileID: 2800000, guid: f0cbd43daba83fe47b7110eaf583a01d, type: 3}
+    albedoScale: {x: 1, y: 1}
+    metallic: 0
+    smoothness: 0.28
   wallLook:
     material: {fileID: 0}
+    mesh: {fileID: 0}
     color: {r: 0.36, g: 0.25, b: 0.17, a: 1}
+    albedo: {fileID: 2800000, guid: 0833eeffad7806d439d2e26df951db5a, type: 3}
+    albedoScale: {x: 1, y: 1}
+    metallic: 0
+    smoothness: 0.22
+  trimLook:
+    material: {fileID: 0}
+    mesh: {fileID: 0}
+    color: {r: 0.18, g: 0.11, b: 0.07, a: 1}
+    albedo: {fileID: 0}
+    albedoScale: {x: 1, y: 1}
+    metallic: 0.15
+    smoothness: 0.25
   ballLook:
     material: {fileID: 0}
+    mesh: {fileID: 0}
     color: {r: 0.8, g: 0.82, b: 0.88, a: 1}
+    albedo: {fileID: 2800000, guid: 74794b8dec08f944c86c74445ed6764c, type: 3}
+    albedoScale: {x: 1, y: 1}
+    metallic: 0.85
+    smoothness: 0.72
   holeLook:
     material: {fileID: 0}
+    mesh: {fileID: 0}
     color: {r: 0.04, g: 0.04, b: 0.04, a: 1}
+    albedo: {fileID: 0}
+    albedoScale: {x: 1, y: 1}
+    metallic: 0.4
+    smoothness: 0.1
   exitLook:
     material: {fileID: 0}
+    mesh: {fileID: 0}
     color: {r: 0.2, g: 0.85, b: 0.3, a: 1}
+    albedo: {fileID: 0}
+    albedoScale: {x: 1, y: 1}
+    metallic: 0.2
+    smoothness: 0.7
   checkpointLook:
     material: {fileID: 0}
+    mesh: {fileID: 0}
     color: {r: 1, g: 0.82, b: 0.15, a: 1}
+    albedo: {fileID: 2800000, guid: 74794b8dec08f944c86c74445ed6764c, type: 3}
+    albedoScale: {x: 1, y: 1}
+    metallic: 0.8
+    smoothness: 0.65
   redGateLook:
     material: {fileID: 0}
+    mesh: {fileID: 0}
     color: {r: 0.9, g: 0.15, b: 0.15, a: 1}
+    albedo: {fileID: 2800000, guid: 74794b8dec08f944c86c74445ed6764c, type: 3}
+    albedoScale: {x: 1, y: 1}
+    metallic: 0.7
+    smoothness: 0.45
   blueGateLook:
     material: {fileID: 0}
+    mesh: {fileID: 0}
     color: {r: 0.15, g: 0.35, b: 0.95, a: 1}
+    albedo: {fileID: 2800000, guid: 74794b8dec08f944c86c74445ed6764c, type: 3}
+    albedoScale: {x: 1, y: 1}
+    metallic: 0.7
+    smoothness: 0.45
+  cornerCandles: 1
+  candleModel: {fileID: 2759817534889948315, guid: f7e0df92f27b0054586003a80a39da42, type: 3}
+  candleFlameColor: {r: 1, g: 0.55, b: 0.18, a: 1}
+  candleLightIntensity: 6
 --- !u!4 &772147171
 Transform:
   m_ObjectHideFlags: 0

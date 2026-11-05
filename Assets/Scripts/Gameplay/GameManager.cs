@@ -291,6 +291,8 @@ namespace RVA
                 Debug.Log($"[GameManager] {CurrentLevelName} complete, {what} {FormatTime(LastResultSeconds)}.", this);
             }
             LevelCompleted?.Invoke(LastResultSeconds);
+            if (builder != null)
+                MazeGoal.PlayWinOn(builder.VisualRoot);
         }
 
         void HandleDebugKeys()

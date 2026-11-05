@@ -17,15 +17,24 @@ namespace RVA
         [Serializable]
         public class PieceLook
         {
-            [Tooltip("Optional. When empty, a copy of the default material in the colour below is used.")]
+            [Tooltip("Optional. When empty, a URP Lit material is built from the fields below.")]
             public Material material;
+            [Tooltip("Optional mesh from Blender or the Asset Store. When empty, a primitive is used.")]
+            public Mesh mesh;
             public Color color = Color.white;
+            public Texture albedo;
+            [Tooltip("How many times the albedo repeats across one cell (floor uses the maze size instead).")]
+            public Vector2 albedoScale = Vector2.one;
+            [Range(0f, 1f)] public float metallic;
+            [Range(0f, 1f)] public float smoothness = 0.3f;
 
             public PieceLook() { }
 
-            public PieceLook(Color color)
+            public PieceLook(Color color, float metallic = 0f, float smoothness = 0.3f)
             {
                 this.color = color;
+                this.metallic = metallic;
+                this.smoothness = smoothness;
             }
         }
 
@@ -83,15 +92,24 @@ namespace RVA
         [SerializeField, Range(0f, 1f)] float ballFriction = 0.4f;
         [SerializeField, Range(0f, 1f)] float ballBounciness = 0.2f;
 
-        [Header("Look (plain shapes for now; models come in Phase 4)")]
-        [SerializeField] PieceLook floorLook = new PieceLook(new Color(0.86f, 0.8f, 0.68f));
-        [SerializeField] PieceLook wallLook = new PieceLook(new Color(0.36f, 0.25f, 0.17f));
-        [SerializeField] PieceLook ballLook = new PieceLook(new Color(0.8f, 0.82f, 0.88f));
-        [SerializeField] PieceLook holeLook = new PieceLook(new Color(0.04f, 0.04f, 0.04f));
-        [SerializeField] PieceLook exitLook = new PieceLook(new Color(0.2f, 0.85f, 0.3f));
-        [SerializeField] PieceLook checkpointLook = new PieceLook(new Color(1f, 0.82f, 0.15f));
-        [SerializeField] PieceLook redGateLook = new PieceLook(new Color(0.9f, 0.15f, 0.15f));
-        [SerializeField] PieceLook blueGateLook = new PieceLook(new Color(0.15f, 0.35f, 0.95f));
+        [Header("Look (castle workshop: oak, brass, iron)")]
+        [SerializeField] PieceLook floorLook = new PieceLook(new Color(0.72f, 0.55f, 0.32f), 0f, 0.28f);
+        [SerializeField] PieceLook wallLook = new PieceLook(new Color(0.38f, 0.24f, 0.14f), 0f, 0.22f);
+        [SerializeField] PieceLook trimLook = new PieceLook(new Color(0.45f, 0.32f, 0.18f), 0f, 0.22f);
+        [SerializeField] PieceLook ballLook = new PieceLook(new Color(0.78f, 0.66f, 0.28f), 0.85f, 0.72f);
+        [SerializeField] PieceLook holeLook = new PieceLook(new Color(0.04f, 0.03f, 0.02f), 0.4f, 0.1f);
+        [SerializeField] PieceLook exitLook = new PieceLook(new Color(0.35f, 0.85f, 0.4f), 0.2f, 0.7f);
+        [SerializeField] PieceLook checkpointLook = new PieceLook(new Color(0.92f, 0.72f, 0.22f), 0.8f, 0.65f);
+        [SerializeField] PieceLook redGateLook = new PieceLook(new Color(0.62f, 0.1f, 0.08f), 0.7f, 0.45f);
+        [SerializeField] PieceLook blueGateLook = new PieceLook(new Color(0.12f, 0.22f, 0.62f), 0.7f, 0.45f);
+
+        [Header("Corner candles")]
+        [SerializeField] bool cornerCandles = true;
+        [Tooltip("Optional candle model (Quaternius). When empty, simple shapes are used.")]
+        [SerializeField] GameObject candleModel;
+        [SerializeField] Color candleFlameColor = new Color(1f, 0.55f, 0.18f);
+        [Tooltip("Point-light intensity. Range follows the printed maze size.")]
+        [SerializeField, Min(0f)] float candleLightIntensity = 6f;
 
         static readonly Dictionary<PrimitiveType, Mesh> meshCache = new Dictionary<PrimitiveType, Mesh>();
         static Material defaultMaterial;
@@ -330,6 +348,8 @@ namespace RVA
                 var debugRoot = new GameObject("Debug renderers").transform;
                 debugRoot.SetParent(PhysicsRoot, false);
                 AddStaticPieces(debugRoot);
+                if (cornerCandles)
+                    AddCornerCandles(debugRoot, Mathf.Max(Layout.Rows, Layout.Cols));
             }
 
             SetLayerRecursively(PhysicsRoot, hiddenLayer);
@@ -448,6 +468,8 @@ namespace RVA
             ApplyVisualScale();
 
             AddStaticPieces(VisualRoot);
+            if (cornerCandles)
+                AddCornerCandles(VisualRoot, visualSize);
 
             VisualBall = AddMesh(VisualRoot, "Ball", PrimitiveType.Sphere, StartLocalPosition, Vector3.one * (ballRadius * 2f), ballLook).transform;
             mirrorPairs.Add(new MirrorPair(Ball.transform, VisualBall, true));
@@ -466,7 +488,8 @@ namespace RVA
         void AddStaticPieces(Transform parent)
         {
             MazeLayout layout = Layout;
-            AddMesh(parent, "Floor", PrimitiveType.Cube, new Vector3(0f, -0.05f, 0f), new Vector3(layout.Cols, 0.1f, layout.Rows), floorLook);
+            GameObject floor = AddMesh(parent, "Floor", PrimitiveType.Cube, new Vector3(0f, -0.05f, 0f), new Vector3(layout.Cols, 0.1f, layout.Rows), floorLook);
+            TileAlbedo(floor, new Vector2(layout.Cols, layout.Rows));
 
             for (int r = 0; r < layout.Rows; r++)
             {
@@ -476,30 +499,85 @@ namespace RVA
                     switch (layout[r, c])
                     {
                         case MazeCell.Wall:
-                            AddMesh(parent, $"Wall {r + 1},{c + 1}", PrimitiveType.Cube,
-                                cell + Vector3.up * (wallHeight * 0.5f), new Vector3(1f, wallHeight, 1f), wallLook);
+                            AddWall(parent, r, c, cell);
                             break;
                         case MazeCell.Hole:
                             AddMesh(parent, $"Hole {r + 1},{c + 1}", PrimitiveType.Cylinder,
-                                cell + Vector3.up * 0.01f, new Vector3(holeRadius * 2f, 0.005f, holeRadius * 2f), holeLook);
+                                cell + Vector3.up * 0.01f, new Vector3(holeRadius * 2f, 0.012f, holeRadius * 2f), holeLook);
                             break;
                         case MazeCell.Exit:
-                            AddMesh(parent, $"Exit {r + 1},{c + 1}", PrimitiveType.Cube,
-                                cell + Vector3.up * 0.01f, new Vector3(0.8f, 0.02f, 0.8f), exitLook);
+                            AddExit(parent, r, c, cell);
                             break;
                         case MazeCell.Checkpoint:
                             AddMesh(parent, $"Checkpoint {r + 1},{c + 1}", PrimitiveType.Cylinder,
-                                cell + Vector3.up * 0.01f, new Vector3(0.6f, 0.01f, 0.6f), checkpointLook);
+                                cell + Vector3.up * 0.015f, new Vector3(0.62f, 0.02f, 0.62f), checkpointLook);
                             break;
                     }
                 }
             }
         }
 
+        /// <param name="worldSpan">Longest side of this copy in world units. The printed maze uses metres; the hidden copy uses cells (1 cell = 1 unit).</param>
+        void AddCornerCandles(Transform parent, float worldSpan)
+        {
+            (int row, int col)[] corners =
+            {
+                (0, 0),
+                (0, Layout.Cols - 1),
+                (Layout.Rows - 1, 0),
+                (Layout.Rows - 1, Layout.Cols - 1)
+            };
+
+            foreach ((int row, int col) in corners)
+            {
+                Vector3 cell = CellToLocal(row, col);
+                var candle = new GameObject($"Candle {row + 1},{col + 1}");
+                candle.transform.SetParent(parent, false);
+                candle.transform.localPosition = cell + Vector3.up * (wallHeight + 0.08f);
+
+                Vector3 inward = new Vector3(-cell.x, 0f, -cell.z);
+                if (inward.sqrMagnitude > 0.0001f)
+                {
+                    // The wick sits on the model's left (-X). Yaw 90° so that side, not the front, faces the centre.
+                    candle.transform.localRotation = Quaternion.LookRotation(inward.normalized, Vector3.up) * Quaternion.Euler(0f, 90f, 0f);
+                }
+
+                candle.AddComponent<MazeCandle>().Init(worldSpan, candleFlameColor, candleLightIntensity, candleModel);
+            }
+        }
+
+        void AddWall(Transform parent, int row, int col, Vector3 cell)
+        {
+            string name = $"Wall {row + 1},{col + 1}";
+            AddMesh(parent, name, PrimitiveType.Cube,
+                cell + Vector3.up * (wallHeight * 0.5f), new Vector3(0.92f, wallHeight, 0.92f), wallLook);
+            AddMesh(parent, name + " cap", PrimitiveType.Cube,
+                cell + Vector3.up * (wallHeight + 0.04f), new Vector3(1f, 0.08f, 1f), trimLook);
+        }
+
+        void AddExit(Transform parent, int row, int col, Vector3 cell)
+        {
+            var root = new GameObject($"Exit {row + 1},{col + 1}");
+            root.transform.SetParent(parent, false);
+            root.transform.localPosition = cell;
+
+            AddMesh(root.transform, "Pad", PrimitiveType.Cube, Vector3.up * 0.02f, new Vector3(0.85f, 0.04f, 0.85f), exitLook);
+            AddMesh(root.transform, "Post L", PrimitiveType.Cube, new Vector3(-0.32f, wallHeight * 0.35f, 0f), new Vector3(0.12f, wallHeight * 0.7f, 0.12f), trimLook);
+            AddMesh(root.transform, "Post R", PrimitiveType.Cube, new Vector3(0.32f, wallHeight * 0.35f, 0f), new Vector3(0.12f, wallHeight * 0.7f, 0.12f), trimLook);
+            AddMesh(root.transform, "Lintel", PrimitiveType.Cube, new Vector3(0f, wallHeight * 0.72f, 0f), new Vector3(0.8f, 0.1f, 0.12f), trimLook);
+
+            MazeGoal goal = root.AddComponent<MazeGoal>();
+            goal.Init(exitLook.color);
+        }
+
         void AddGateMesh(Transform gateTransform, GateColor color)
         {
-            AddMesh(gateTransform, "Gate mesh", PrimitiveType.Cube, new Vector3(0f, wallHeight * 0.5f, 0f),
-                new Vector3(0.96f, wallHeight * 0.96f, 0.96f), color == GateColor.Red ? redGateLook : blueGateLook);
+            PieceLook look = color == GateColor.Red ? redGateLook : blueGateLook;
+            float h = wallHeight;
+            AddMesh(gateTransform, "Post L", PrimitiveType.Cube, new Vector3(-0.38f, h * 0.5f, 0f), new Vector3(0.14f, h, 0.18f), trimLook);
+            AddMesh(gateTransform, "Post R", PrimitiveType.Cube, new Vector3(0.38f, h * 0.5f, 0f), new Vector3(0.14f, h, 0.18f), trimLook);
+            AddMesh(gateTransform, "Top", PrimitiveType.Cube, new Vector3(0f, h * 0.92f, 0f), new Vector3(0.9f, 0.12f, 0.18f), trimLook);
+            AddMesh(gateTransform, "Panel", PrimitiveType.Cube, new Vector3(0f, h * 0.45f, 0f), new Vector3(0.62f, h * 0.75f, 0.08f), look);
         }
 
         GameObject AddMesh(Transform parent, string objectName, PrimitiveType shape, Vector3 localPosition, Vector3 localScale, PieceLook look)
@@ -508,20 +586,64 @@ namespace RVA
             meshObject.transform.SetParent(parent, false);
             meshObject.transform.localPosition = localPosition;
             meshObject.transform.localScale = localScale;
-            meshObject.AddComponent<MeshFilter>().sharedMesh = GetPrimitiveMesh(shape);
+            meshObject.AddComponent<MeshFilter>().sharedMesh = look != null && look.mesh != null ? look.mesh : GetPrimitiveMesh(shape);
             meshObject.AddComponent<MeshRenderer>().sharedMaterial = GetMaterial(look);
             return meshObject;
         }
 
+        void TileAlbedo(GameObject meshObject, Vector2 scale)
+        {
+            Renderer renderer = meshObject.GetComponent<Renderer>();
+            if (renderer == null)
+                return;
+            Material instance = new Material(renderer.sharedMaterial);
+            if (instance.HasProperty("_BaseMap"))
+                instance.SetTextureScale("_BaseMap", scale);
+            else
+                instance.mainTextureScale = scale;
+            renderer.material = instance;
+        }
+
         Material GetMaterial(PieceLook look)
         {
+            if (look == null)
+                look = new PieceLook(Color.white);
             if (look.material != null)
                 return look.material;
 
             if (!materials.TryGetValue(look, out Material material) || material == null)
             {
-                GetPrimitiveMesh(PrimitiveType.Cube); // makes sure defaultMaterial is set
-                material = new Material(defaultMaterial) { color = look.color };
+                Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+                if (shader != null)
+                {
+                    material = new Material(shader);
+                    if (material.HasProperty("_BaseColor"))
+                        material.SetColor("_BaseColor", look.color);
+                    else
+                        material.color = look.color;
+                    if (material.HasProperty("_Metallic"))
+                        material.SetFloat("_Metallic", look.metallic);
+                    if (material.HasProperty("_Smoothness"))
+                        material.SetFloat("_Smoothness", look.smoothness);
+                    if (look.albedo != null)
+                    {
+                        if (material.HasProperty("_BaseMap"))
+                        {
+                            material.SetTexture("_BaseMap", look.albedo);
+                            material.SetTextureScale("_BaseMap", look.albedoScale);
+                        }
+                        else
+                        {
+                            material.mainTexture = look.albedo;
+                            material.mainTextureScale = look.albedoScale;
+                        }
+                    }
+                }
+                else
+                {
+                    GetPrimitiveMesh(PrimitiveType.Cube);
+                    material = new Material(defaultMaterial) { color = look.color };
+                }
                 materials[look] = material;
             }
             return material;
