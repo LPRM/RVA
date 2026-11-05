@@ -45,12 +45,25 @@ namespace RVA
             body.transform.localPosition = new Vector3(0f, stickLength * 0.5f, 0f);
             body.transform.localScale = new Vector3(stickDiameter, stickLength * 0.5f, stickDiameter);
 
-            Renderer bodyRenderer = body.GetComponent<Renderer>();
-            material = new Material(bodyRenderer.sharedMaterial)
-            {
-                color = keyGate.KeyColor == GateColor.Red ? redColor : blueColor
-            };
-            bodyRenderer.sharedMaterial = material;
+            Color color = keyGate.KeyColor == GateColor.Red ? redColor : blueColor;
+            material = MakeMetal(color);
+            body.GetComponent<Renderer>().sharedMaterial = material;
+
+            GameObject bow = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            bow.name = "Bow";
+            Destroy(bow.GetComponent<Collider>());
+            bow.transform.SetParent(stick.transform, false);
+            bow.transform.localPosition = new Vector3(0f, stickLength * 0.12f, 0f);
+            bow.transform.localScale = Vector3.one * (stickDiameter * 2.2f);
+            bow.GetComponent<Renderer>().sharedMaterial = material;
+
+            GameObject bit = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            bit.name = "Bit";
+            Destroy(bit.GetComponent<Collider>());
+            bit.transform.SetParent(stick.transform, false);
+            bit.transform.localPosition = new Vector3(stickDiameter * 0.7f, stickLength * 0.88f, 0f);
+            bit.transform.localScale = new Vector3(stickDiameter * 1.4f, stickDiameter * 0.7f, stickDiameter * 0.5f);
+            bit.GetComponent<Renderer>().sharedMaterial = material;
 
             // The tip: an empty object at the far end of the stick.
             Transform tip = new GameObject("Stick tip").transform;
@@ -67,6 +80,24 @@ namespace RVA
             bool visible = keyGate.IsTracked;
             if (stick.activeSelf != visible)
                 stick.SetActive(visible);
+        }
+
+        static Material MakeMetal(Color color)
+        {
+            Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+            if (shader == null)
+                return new Material(Shader.Find("Sprites/Default") ?? Shader.Find("Standard")) { color = color };
+
+            var material = new Material(shader);
+            if (material.HasProperty("_BaseColor"))
+                material.SetColor("_BaseColor", color);
+            else
+                material.color = color;
+            if (material.HasProperty("_Metallic"))
+                material.SetFloat("_Metallic", 0.85f);
+            if (material.HasProperty("_Smoothness"))
+                material.SetFloat("_Smoothness", 0.6f);
+            return material;
         }
 
         void OnDestroy()
