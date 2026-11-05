@@ -19,9 +19,9 @@ namespace RVA
         [SerializeField] MazeBuilder builder;
         [SerializeField] GameManager game;
 
-        [SerializeField] Color activeCheckpointColor = new Color(1f, 0.4f, 0.7f);
+        [SerializeField] Color activeCheckpointColor = new Color(1.6f, 0.35f, 0.95f);
         [Tooltip("Colour of a checkpoint the ball has not reached (same as Checkpoint Look in the MazeBuilder).")]
-        [SerializeField] Color inactiveCheckpointColor = new Color(1f, 0.82f, 0.15f);
+        [SerializeField] Color inactiveCheckpointColor = new Color(1.7f, 1.25f, 0.25f);
         [Tooltip("Within this distance (in cells) the ball counts as already being at a checkpoint, so Undo goes one further back.")]
         [SerializeField, Min(0.05f)] float atCheckpointDistance = 0.5f;
         [Tooltip("U = Undo, for testing until the UI button exists.")]
