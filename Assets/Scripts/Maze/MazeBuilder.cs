@@ -117,8 +117,8 @@ namespace RVA
         [SerializeField] GameObject wallLightModel;
         [SerializeField] Color wallLightColor = new Color(1f, 0.95f, 0.8f);
         [SerializeField, Min(0f)] float wallLightIntensity = 1.2f;
-        [Tooltip("Place a light on every Nth wall that faces a corridor.")]
-        [SerializeField, Min(1)] int wallLightSpacing = 4;
+        [Tooltip("Every open cell gets a wall light within this many cells. Lower = more lights.")]
+        [SerializeField, Min(1f)] float wallLightCoverage = 1.5f;
 
         static readonly Dictionary<PrimitiveType, Mesh> meshCache = new Dictionary<PrimitiveType, Mesh>();
         static Material defaultMaterial;
@@ -577,26 +577,52 @@ namespace RVA
         /// <summary>Small lights on the corridor face of some walls, spaced so they don't cover every cell.</summary>
         void AddWallLights(Transform parent, float worldSpan)
         {
-            int seen = 0;
+            // Walk the open cells in reading order. A cell with no light within wallLightCoverage cells
+            // gets one on a wall next to it, facing it. This spreads the lights over the whole maze,
+            // whatever its shape, instead of bunching them where walls happen to come in a row.
+            var litCells = new List<Vector2>();
+            var usedWalls = new HashSet<(int row, int col)>();
+            float coverageSq = wallLightCoverage * wallLightCoverage;
+            (int dRow, int dCol)[] neighbours = { (-1, 0), (1, 0), (0, -1), (0, 1) };
+
             for (int row = 0; row < Layout.Rows; row++)
             {
                 for (int col = 0; col < Layout.Cols; col++)
                 {
-                    if (Layout[row, col] != MazeCell.Wall)
-                        continue;
-                    if (!TryCorridorDirection(row, col, out Vector3 inward))
+                    if (Layout[row, col] == MazeCell.Wall)
                         continue;
 
-                    seen++;
-                    if ((seen - 1) % wallLightSpacing != 0)
+                    var here = new Vector2(row, col);
+                    bool covered = false;
+                    foreach (Vector2 lit in litCells)
+                    {
+                        if ((lit - here).sqrMagnitude <= coverageSq)
+                        {
+                            covered = true;
+                            break;
+                        }
+                    }
+                    if (covered)
                         continue;
 
-                    Vector3 cell = CellToLocal(row, col);
-                    var light = new GameObject($"Wall light {row + 1},{col + 1}");
-                    light.transform.SetParent(parent, false);
-                    light.transform.localPosition = cell + Vector3.up * (wallHeight * 0.62f) + inward * 0.46f;
-                    light.transform.localRotation = Quaternion.LookRotation(inward, Vector3.up);
-                    light.AddComponent<MazeWallLight>().Init(worldSpan, wallLightColor, wallLightIntensity * LightScale(worldSpan), wallLightModel);
+                    foreach ((int dRow, int dCol) in neighbours)
+                    {
+                        int wallRow = row + dRow, wallCol = col + dCol;
+                        if (!Layout.InBounds(wallRow, wallCol) || Layout[wallRow, wallCol] != MazeCell.Wall)
+                            continue;
+                        if (!usedWalls.Add((wallRow, wallCol)))
+                            continue;
+
+                        Vector3 wall = CellToLocal(wallRow, wallCol);
+                        Vector3 inward = (CellToLocal(row, col) - wall).normalized;
+                        var light = new GameObject($"Wall light {wallRow + 1},{wallCol + 1}");
+                        light.transform.SetParent(parent, false);
+                        light.transform.localPosition = wall + Vector3.up * (wallHeight * 0.62f) + inward * 0.46f;
+                        light.transform.localRotation = Quaternion.LookRotation(inward, Vector3.up);
+                        light.AddComponent<MazeWallLight>().Init(worldSpan, wallLightColor, wallLightIntensity * LightScale(worldSpan), wallLightModel);
+                        litCells.Add(here);
+                        break;
+                    }
                 }
             }
         }
