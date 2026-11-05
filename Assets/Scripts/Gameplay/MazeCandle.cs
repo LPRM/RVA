@@ -220,7 +220,8 @@ namespace RVA
             main.startColor = flameColor;
             main.maxParticles = 18;
             main.simulationSpace = ParticleSystemSimulationSpace.Local;
-            main.gravityModifier = -0.4f;
+            main.scalingMode = ParticleSystemScalingMode.Hierarchy;
+            main.gravityModifier = 0f;
 
             var emission = ps.emission;
             emission.rateOverTime = 28f;
@@ -250,18 +251,9 @@ namespace RVA
                 });
 
             var renderer = ps.GetComponent<ParticleSystemRenderer>();
-            Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
-            if (shader == null)
-                shader = Shader.Find("Sprites/Default");
-            if (shader != null)
-            {
-                var material = new Material(shader);
-                if (material.HasProperty("_BaseColor"))
-                    material.SetColor("_BaseColor", flameColor);
-                else
-                    material.color = flameColor;
-                renderer.material = material;
-            }
+            Material glow = Resources.Load<Material>("ParticleGlow");
+            if (glow != null)
+                renderer.sharedMaterial = glow;
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
         }
 

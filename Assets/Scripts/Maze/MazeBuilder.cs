@@ -532,6 +532,17 @@ namespace RVA
             }
         }
 
+        /// <summary>
+        /// Point lights fade with the square of the distance (URP), so the same intensity is much stronger
+        /// on the small printed maze than on the hidden copy (1 cell = 1 unit). Multiplying by the scale
+        /// squared makes both copies look equally lit. Returns 1 for the hidden copy.
+        /// </summary>
+        float LightScale(float worldSpan)
+        {
+            float unitsPerCell = worldSpan / Mathf.Max(Layout.Rows, Layout.Cols);
+            return unitsPerCell * unitsPerCell;
+        }
+
         /// <param name="worldSpan">Longest side of this copy in world units. The printed maze uses metres; the hidden copy uses cells (1 cell = 1 unit).</param>
         void AddCornerCandles(Transform parent, float worldSpan)
         {
@@ -557,7 +568,7 @@ namespace RVA
                     candle.transform.localRotation = Quaternion.LookRotation(inward.normalized, Vector3.up) * Quaternion.Euler(0f, 90f, 0f);
                 }
 
-                candle.AddComponent<MazeCandle>().Init(worldSpan, candleFlameColor, candleLightIntensity, candleModel);
+                candle.AddComponent<MazeCandle>().Init(worldSpan, candleFlameColor, candleLightIntensity * LightScale(worldSpan), candleModel);
             }
         }
 
@@ -583,7 +594,7 @@ namespace RVA
                     light.transform.SetParent(parent, false);
                     light.transform.localPosition = cell + Vector3.up * (wallHeight * 0.62f) + inward * 0.46f;
                     light.transform.localRotation = Quaternion.LookRotation(inward, Vector3.up);
-                    light.AddComponent<MazeWallLight>().Init(worldSpan, wallLightColor, wallLightIntensity, wallLightModel);
+                    light.AddComponent<MazeWallLight>().Init(worldSpan, wallLightColor, wallLightIntensity * LightScale(worldSpan), wallLightModel);
                 }
             }
         }

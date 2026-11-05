@@ -47,7 +47,8 @@ namespace RVA
             main.startColor = glow;
             main.maxParticles = 24;
             main.simulationSpace = ParticleSystemSimulationSpace.Local;
-            main.gravityModifier = -0.05f;
+            main.scalingMode = ParticleSystemScalingMode.Hierarchy;
+            main.gravityModifier = 0f;
 
             var emission = ps.emission;
             emission.rateOverTime = 12f;
@@ -76,7 +77,8 @@ namespace RVA
             main.startColor = glow;
             main.maxParticles = 40;
             main.simulationSpace = ParticleSystemSimulationSpace.Local;
-            main.gravityModifier = 0.2f;
+            main.scalingMode = ParticleSystemScalingMode.Hierarchy;
+            main.gravityModifier = 0f;
 
             var emission = ps.emission;
             emission.rateOverTime = 0f;
@@ -93,20 +95,9 @@ namespace RVA
         static void ApplyUnlit(ParticleSystem ps, Color glow)
         {
             var renderer = ps.GetComponent<ParticleSystemRenderer>();
-            Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
-            if (shader == null)
-                shader = Shader.Find("Particles/Standard Unlit");
-            if (shader == null)
-                shader = Shader.Find("Sprites/Default");
-            if (shader == null)
-                return;
-
-            var material = new Material(shader);
-            if (material.HasProperty("_BaseColor"))
-                material.SetColor("_BaseColor", glow);
-            else
-                material.color = glow;
-            renderer.material = material;
+            Material material = Resources.Load<Material>("ParticleGlow");
+            if (material != null)
+                renderer.sharedMaterial = material;
             renderer.renderMode = ParticleSystemRenderMode.Billboard;
         }
     }
