@@ -147,21 +147,34 @@ namespace RVA
 
         bool TryGetLocalBounds(GameObject model, out Bounds bounds)
         {
-            bounds = new Bounds(transform.position, Vector3.zero);
-            Renderer[] renderers = model.GetComponentsInChildren<Renderer>();
-            if (renderers.Length == 0)
-                return false;
+            // Measured in the candle's own space, not from world bounds: the maze can be built while
+            // the marker is tracked at any angle, and a tilted world box gives a wrong (even negative) size.
+            bounds = new Bounds();
+            bool found = false;
+            Matrix4x4 worldToCandle = transform.worldToLocalMatrix;
+            foreach (Renderer meshRenderer in model.GetComponentsInChildren<Renderer>())
+            {
+                if (meshRenderer is ParticleSystemRenderer)
+                    continue;
 
-            bounds = renderers[0].bounds;
-            for (int i = 1; i < renderers.Length; i++)
-                bounds.Encapsulate(renderers[i].bounds);
-
-            // Renderer bounds are in world space. The candle's parent is unscaled here, so
-            // converting through the candle transform gives cell-local extents.
-            Vector3 min = transform.InverseTransformPoint(bounds.min);
-            Vector3 max = transform.InverseTransformPoint(bounds.max);
-            bounds = new Bounds((min + max) * 0.5f, max - min);
-            return true;
+                Bounds local = meshRenderer.localBounds;
+                Matrix4x4 toCandle = worldToCandle * meshRenderer.localToWorldMatrix;
+                for (int corner = 0; corner < 8; corner++)
+                {
+                    Vector3 sign = new Vector3((corner & 1) == 0 ? -1f : 1f, (corner & 2) == 0 ? -1f : 1f, (corner & 4) == 0 ? -1f : 1f);
+                    Vector3 point = toCandle.MultiplyPoint3x4(local.center + Vector3.Scale(local.extents, sign));
+                    if (found)
+                    {
+                        bounds.Encapsulate(point);
+                    }
+                    else
+                    {
+                        bounds = new Bounds(point, Vector3.zero);
+                        found = true;
+                    }
+                }
+            }
+            return found;
         }
 
         void Update()
