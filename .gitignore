@@ -86,3 +86,10 @@ crashlytics-build.properties
 
 /[Aa]ssets/_Recovery/
 /[Aa]ssets/_Recovery.meta
+
+# Local tool files
+/.utmp/
+
+# UWP signing certificate (private key)
+/Assets/WSATestCertificate.pfx
+/Assets/WSATestCertificate.pfx.meta
